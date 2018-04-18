@@ -10,5 +10,6 @@
 
 // Prototypes
 int check_arg(int, char **);
+int init_and_launch_server(int port, char *path);
 
 #endif //PSU_MYFTP_2017_MY_FTP_H

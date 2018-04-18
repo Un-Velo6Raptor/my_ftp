@@ -7,6 +7,7 @@
 
 SRC		=	src/main.c				\
 			src/check_arg.c				\
+			src/init/init_server.c			\
 
 OBJ		=	$(SRC:.c=.o)
 

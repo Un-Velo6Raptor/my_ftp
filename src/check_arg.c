@@ -9,7 +9,9 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
+#include "my_ftp.h"
 
 static void print_help(void)
 {
@@ -42,7 +44,7 @@ int check_arg(int argc, char **argv)
 	if (argc == 2 && !strcmp(argv[1], "-help"))
 		print_help();
 	else if (argc == 3 && atoi(argv[1]) > 0 && !is_a_dir(argv[2]))
-		printf("Is ok\n");
+		ret = init_and_launch_server(atoi(argv[1]), argv[2]);
 	else {
 		fprintf(stderr, "USAGE:  ./server port path\n");
 		ret = 84;
