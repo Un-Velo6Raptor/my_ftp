@@ -17,7 +17,7 @@ static int init_listen(int fd_server)
 {
 	int ret = 0;
 
-	if (listen(fd_server, 100)) {
+	if (listen(fd_server, NB_CLIENT_MAX)) {
 		fprintf(stderr, "Error: Can't init listen\n");
 		ret = 84;
 	}
@@ -53,7 +53,10 @@ int init_and_launch_server(int port, char *path)
 	if (fd_server == -1)
 		fprintf(stderr, "Error: Can't create the socket\n");
 	if (!init_bind(fd_server, port) && !init_listen(fd_server))
-		printf("Start loop fork accept client\n");
+		loop_client_connection(fd_server, path);
+	if (setsockopt(fd_server, SOL_SOCKET, SO_REUSEADDR, &(int){1},
+		sizeof(int)) < 0)
+		fprintf(stderr, "Error: setsockopt failed");
 	close(fd_server);
 	return ret;
 }
