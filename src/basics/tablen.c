@@ -5,13 +5,13 @@
 ** Created by martin.januario@epitech.eu,
 */
 
+#include <stdlib.h>
 #include "my_ftp.h"
 
-// TODO: NORME à faire
-int main(int argc, char **argv)
+int tablen(char **tab)
 {
-	int ret = 0;
+	int idx = 0;
 
-	ret = check_arg(argc, argv);
-	return ret;
+	for (; tab && tab[idx]; ++idx);
+	return idx;
 }

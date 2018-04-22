@@ -5,13 +5,14 @@
 ** Created by martin.januario@epitech.eu,
 */
 
+#include <stdlib.h>
 #include "my_ftp.h"
 
-// TODO: NORME à faire
-int main(int argc, char **argv)
+void free_tab(char **tab)
 {
-	int ret = 0;
-
-	ret = check_arg(argc, argv);
-	return ret;
+	for (int idx = 0; tab && tab[idx]; ++idx) {
+		free(tab[idx]);
+	}
+	if (tab)
+		free(tab);
 }
