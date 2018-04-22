@@ -19,7 +19,7 @@
 #endif
 
 #ifndef		NB_COMMAND
-# define 	NB_COMMAND		3
+# define 	NB_COMMAND		100 // Todo: Update to the real number
 #endif
 
 enum bool {
@@ -32,6 +32,7 @@ typedef struct s_client_list {
 	enum bool is_used;
 	enum bool username;
 	enum bool password;
+	enum bool mode;
 
 	pid_t pid;
 	int fd;
@@ -46,6 +47,7 @@ char **str_to_wordtab(char *str);
 int tablen(char **tab);
 int init_and_launch_server(int port, char *path);
 int loop_client_connection(int fd_server, char *path);
+int write_msg(t_client *client, char *msg);
 int print_msg_to_client(t_client *client, char *code);
 void error_client(t_client *client, char *msg);
 void init_list_client(t_client *list_empty);
@@ -56,5 +58,9 @@ int init_manage_command(int fd_server, t_client *client, char *path);
 int manage_command(int fd_server, t_client *client, char *home, char *command);
 int command_user(int fd_server, t_client *client, char *home, char *command);
 int command_pass(int fd_server, t_client *client, char *home, char *command);
+int command_quit(int fd_server, t_client *client, char *home, char *command);
+int command_noop(int fd_server, t_client *client, char *home, char *command);
+int command_help(int fd_server, t_client *client, char *home, char *command);
+int command_cwd(int fd_server, t_client *client, char *home, char *command);
 
 #endif //PSU_MYFTP_2017_MY_FTP_H

@@ -12,12 +12,20 @@
 static int (*list_command[NB_COMMAND])(int, t_client *, char *, char *) = {
 	command_user,
 	command_pass,
+	command_quit,
+	command_noop,
+	command_help,
+	command_cwd,
 	NULL
 };
 
 static const char *list_prefix[NB_COMMAND + 1] = {
 	"USER",
 	"PASS",
+	"QUIT",
+	"NOOP",
+	"HELP",
+	"CWD",
 	NULL
 };
 

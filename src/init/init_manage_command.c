@@ -55,7 +55,7 @@ static int loop_read(int fd_server, t_client *client, char *home)
 			if (len <= 0)
 				exit(1);
 			command[len] = '\0';
-			epur_and_launch_command(fd_server, client, home, command);
+			ret = epur_and_launch_command(fd_server, client, home, command);
 		}
 	}
 	return ret;
