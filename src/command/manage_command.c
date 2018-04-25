@@ -54,7 +54,7 @@ int manage_command(int fd_server, t_client *client, char *home, char *command)
 	int ret = -1;
 
 	for (int idx = 0; list_prefix[idx] ; ++idx) {
-		if (!strncmp(list_prefix[idx], command, strlen(list_prefix[idx])))
+		if (!strncasecmp(list_prefix[idx], command, strlen(list_prefix[idx])))
 			ret = list_command[idx](fd_server, client, home, command);
 	}
 	if (ret == -1) {

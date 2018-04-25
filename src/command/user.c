@@ -24,7 +24,7 @@ int command_user(int fd_server __attribute__((unused)),
 	if (!tab)
 		return 0;
 	if (tablen(tab) >= 2) {
-		client->username = (!strcmp(tab[1], "Anonymous")) ? TRUE : UNKNOWN;
+		client->username = (!strcasecmp(tab[1], "Anonymous")) ? TRUE : UNKNOWN;
 		print_msg_to_client(client, "331");
 	} else
 		print_msg_to_client(client, "530");
