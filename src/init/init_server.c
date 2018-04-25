@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <arpa/inet.h>
 #include "my_ftp.h"
 
 static int init_listen(int fd_server)
@@ -32,7 +34,8 @@ static int init_bind(int fd_server, int port)
 	s_in.sin_family = AF_INET;
 	s_in.sin_port = htons(port);
 	s_in.sin_addr.s_addr = INADDR_ANY;
-	if (bind(fd_server, (const struct sockaddr *)&s_in, sizeof(s_in)) == -1) {
+	if (bind(fd_server, (const struct sockaddr *)&s_in, sizeof(s_in)) ==
+		-1) {
 		fprintf(stderr, "Error: Can't bind the socket\n");
 		ret = 84;
 	}

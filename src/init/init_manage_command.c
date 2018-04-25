@@ -9,18 +9,21 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <arpa/inet.h>
+#include <netdb.h>
 #include "my_ftp.h"
 
 static int epur_and_launch_command(int fd_server, t_client *client, char *home,
-	char *command)
+	char *command
+)
 {
 	if (!strcmp(command, "\r\n"))
 		return 0;
 	int tmp = 0;
-	for (int idx = 0; command[idx] != '\0' ; ++idx) {
+	for (int idx = 0; command[idx] != '\0'; ++idx) {
 		while ((command[idx] == ' ' || command[idx] == '\t') &&
-			command[idx + 1] != '\0' && (command[idx + 1] == ' ' ||
-			command[idx + 1] == '\t')) {
+			command[idx + 1] != '\0' &&
+			(command[idx + 1] == ' ' || command[idx + 1] == '\t')) {
 			command[idx] = ' ';
 			command[idx + 1] = ' ';
 			idx++;
@@ -32,6 +35,8 @@ static int epur_and_launch_command(int fd_server, t_client *client, char *home,
 		}
 	}
 	command[tmp] = '\0';
+	if (strlen(command) > 2 && !strcmp(&command[strlen(command) - 2], "\r\n"))
+		command[strlen(command) - 2] = '\0';
 	return manage_command(fd_server, client, home, command);
 }
 
@@ -55,7 +60,8 @@ static int loop_read(int fd_server, t_client *client, char *home)
 			if (len <= 0)
 				exit(1);
 			command[len] = '\0';
-			ret = epur_and_launch_command(fd_server, client, home, command);
+			ret = epur_and_launch_command(fd_server, client, home,
+				command);
 		}
 	}
 	return ret;

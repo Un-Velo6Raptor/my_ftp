@@ -20,7 +20,7 @@ int command_user(int fd_server __attribute__((unused)),
 		print_msg_to_client(client, "530");
 		return 0;
 	}
-	tab = str_to_wordtab(command);
+	tab = str_to_wordtab(command, ' ');
 	if (!tab)
 		return 0;
 	if (tablen(tab) >= 2) {

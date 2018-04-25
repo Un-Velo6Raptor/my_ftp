@@ -16,6 +16,12 @@ static int (*list_command[NB_COMMAND])(int, t_client *, char *, char *) = {
 	command_noop,
 	command_help,
 	command_cwd,
+	command_cdup,
+	command_pwd,
+	command_dele,
+	command_pasv,
+	command_port,
+	command_list,
 	NULL
 };
 
@@ -26,6 +32,12 @@ static const char *list_prefix[NB_COMMAND + 1] = {
 	"NOOP",
 	"HELP",
 	"CWD",
+	"CDUP",
+	"PWD",
+	"DELE",
+	"PASV",
+	"PORT",
+	"LIST",
 	NULL
 };
 
@@ -34,12 +46,9 @@ static enum bool is_logged(t_client *client) {
 
 	if (client->username == TRUE && client->password == TRUE)
 		ret = TRUE;
-	else
-		print_msg_to_client(client, "530");
 	return ret;
 }
 
-// ret == -1: Never used
 int manage_command(int fd_server, t_client *client, char *home, char *command)
 {
 	int ret = -1;
@@ -48,7 +57,9 @@ int manage_command(int fd_server, t_client *client, char *home, char *command)
 		if (!strncmp(list_prefix[idx], command, strlen(list_prefix[idx])))
 			ret = list_command[idx](fd_server, client, home, command);
 	}
-	if (ret == -1 && is_logged(client))
+	if (ret == -1) {
 		print_msg_to_client(client, "500");
+		ret = 0;
+	}
 	return ret;
 }

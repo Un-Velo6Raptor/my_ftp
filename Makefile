@@ -10,6 +10,7 @@ SRC		=	src/main.c				\
 			src/basics/str_to_wordtab.c		\
 			src/basics/tablen.c			\
 			src/basics/free_tab.c			\
+			src/basics/disp_tab.c			\
 			src/init/init_server.c			\
 			src/init/init_manage_command.c		\
 			src/server/server.c			\
@@ -23,6 +24,12 @@ SRC		=	src/main.c				\
 			src/command/noop.c			\
 			src/command/help.c			\
 			src/command/cwd.c			\
+			src/command/cdup.c			\
+			src/command/pwd.c			\
+			src/command/dele.c			\
+			src/command/pasv.c			\
+			src/command/port.c			\
+			src/command/list.c			\
 
 OBJ		=	$(SRC:.c=.o)
 

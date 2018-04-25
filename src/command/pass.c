@@ -19,7 +19,7 @@ int command_pass(int fd_server __attribute__((unused)), t_client *client,
 	} else if (client->username != TRUE) {
 		print_msg_to_client(client, (client->username == FALSE) ? "332" : "530");
 	} else {
-		tab = str_to_wordtab(command);
+		tab = str_to_wordtab(command, ' ');
 		if (!tab)
 			return 0;
 		if (tablen(tab) == 1) {
