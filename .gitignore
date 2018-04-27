@@ -39,4 +39,3 @@ cmake-build-debug
 .idea
 a.out
 test.cpp
-server
