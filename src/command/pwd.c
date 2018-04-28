@@ -24,8 +24,8 @@ int command_pwd(int fd_server __attribute__((unused)), t_client *client,
 	}
 	if (tmp[strlen(tmp) - 1] != '/')
 		strcat(tmp, "/");
-	write_msg(client->fd, "257 ");
+	write_msg(client->fd, "257 \"");
 	write_msg(client->fd, &tmp[strlen(home) - 1]);
-	write_msg(client->fd, "\r\n");
+	write_msg(client->fd, "\"\r\n");
 	return 0;
 }

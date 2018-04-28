@@ -12,8 +12,7 @@ static int verify_path(t_client *client, char *home, char *dir, char *new_dir)
 {
 	if (strncmp(home, new_dir, strlen(home) - 1))
 		chdir(home);
-	print_msg_to_client(client, "250");
-	return 0;
+	return 1;
 }
 
 static int check_change_directory(t_client *client, char *home, char *to)
@@ -53,7 +52,7 @@ int command_cwd(int fd_server __attribute__((unused)), t_client *client,
 	tab = str_to_wordtab(command, ' ');
 	if (tablen(tab) == 1)
 		print_msg_to_client(client, "550");
-	else if (tablen(tab))
-		check_change_directory(client, home, tab[1]);
+	else if (tablen(tab) && check_change_directory(client, home, tab[1]) == 1)
+		print_msg_to_client(client, "250");
 	return 0;
 }

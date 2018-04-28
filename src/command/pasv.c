@@ -104,6 +104,7 @@ int command_pasv(int fd_server, t_client *client,
 		close(client->data_mng.fd_socket);
 		client->data_mng.fd_socket = 0;
 	}
+	print_msg_to_client(client, "150");
 	if (create_new_socket(client, fd_server))
 		print_msg_to_client(client, "552");
 	else {

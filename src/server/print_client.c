@@ -12,7 +12,8 @@
 #include <string.h>
 #include "my_ftp.h"
 
-static const char *msg_client[17] = {
+static const char *msg_client[19] = {
+	"150 Here comes the directory listing.\r\n",
 	"200 Command okay.\r\n",
 	"214 Help message.\r\n",
 	"220 Service ready for new user.\r\n",
@@ -25,6 +26,7 @@ static const char *msg_client[17] = {
 	"425 Use PORT or PASV first.\r\n",
 	"426 Connection closed; transfer aborted.\r\n",
 	"500 Unknown command.\r\n",
+	"503 Bad sequence of commands.\r\n",
 	"530 Not logged in.\r\n",
 	"550 Failed to change directory.\r\n",
 	"552 Requested file action aborted. Exceeded storage allocation (for current directory or dataset).\r\n",
