@@ -22,6 +22,8 @@ static int (*list_command[NB_COMMAND])(int, t_client *, char *, char *) = {
 	command_pasv,
 	command_port,
 	command_list,
+	command_retr,
+	command_stor,
 	NULL
 };
 
@@ -38,6 +40,8 @@ static const char *list_prefix[NB_COMMAND + 1] = {
 	"PASV",
 	"PORT",
 	"LIST",
+	"RETR",
+	"STOR",
 	NULL
 };
 

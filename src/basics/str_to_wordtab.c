@@ -29,7 +29,7 @@ static int len_word(char *str, char sep)
 {
 	int idx = 0;
 
-	for (; str[idx] != '\0' && str[idx] != sep; ++idx);
+	for (; str[idx] != '\0' && (str[idx] != sep || !idx); ++idx);
 	return idx;
 }
 
@@ -38,6 +38,8 @@ static int copy_word(char *str, char *result, char sep)
 	int idx = 0;
 	int tmp = 0;
 
+	if (!str || !result)
+		return 0;
 	for (; str[tmp] != '\0' && str[tmp] == sep; ++tmp);
 	for (; str[idx + tmp] != '\0' && str[idx + tmp] != sep; ++idx) {
 		result[idx] = str[idx + tmp];
@@ -59,7 +61,7 @@ char **str_to_wordtab(char *str, char sep)
 	if (!tab)
 		return NULL;
 	for (; idx < nb_words; ++idx) {
-		tab[idx] = malloc(sizeof(char) * (len_word(str, sep) + 1));
+		tab[idx] = malloc(sizeof(char) * (len_word(&str[start], sep) + 1));
 		if (!tab[idx])
 			return NULL;
 		start += copy_word(&str[start], tab[idx], sep);

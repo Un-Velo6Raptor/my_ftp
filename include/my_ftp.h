@@ -89,6 +89,8 @@ int command_dele(int fd_server, t_client *client, char *home, char *command);
 int command_pasv(int fd_server, t_client *client, char *home, char *command);
 int command_port(int fd_server, t_client *client, char *home, char *command);
 int command_list(int fd_server, t_client *client, char *home, char *command);
+int command_retr(int fd_server, t_client *client, char *home, char *command);
+int command_stor(int fd_server, t_client *client, char *home, char *command);
 
 // TODO: Potentiellemnt à supprimer
 int find_my_ip(int fd, struct sockaddr_in *tmp);
