@@ -7,7 +7,6 @@
 
 #include "my_ftp.h"
 
-// TODO: NORME à faire
 int main(int argc, char **argv)
 {
 	int ret = 0;

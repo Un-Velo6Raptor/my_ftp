@@ -15,45 +15,34 @@
 #include <netinet/in.h>
 #include "my_ftp.h"
 
-
-int find_my_ip(int fd, struct sockaddr_in *tmp)
+static void reset_sockaddr(struct sockaddr_in *s_in)
 {
-	socklen_t len;
-
-	len = sizeof(struct sockaddr_in);
-	if (getsockname(fd, (struct sockaddr *)tmp, &len) == -1) {
-		printf("ERROR get sockname\n");
-		return -1;
-	}
-	return 0;
+	s_in->sin_family = AF_INET;
+	s_in->sin_port = htons(0);
+	s_in->sin_addr.s_addr = INADDR_ANY;
 }
 
 static int bind_and_get_ip_server(t_client *client, int fd_server)
 {
 	struct sockaddr_in s_in;
 	socklen_t len;
-	int ret = 0;
 
 	len = sizeof(socklen_t);
-	s_in.sin_family = AF_INET;
-	s_in.sin_port = htons(0);
-	s_in.sin_addr.s_addr = INADDR_ANY;
-	if (bind(client->data_mng.fd_socket, (struct sockaddr *)&s_in, sizeof(s_in)) == -1 || listen(client->data_mng.fd_socket, 1)) {
-		ret = 84;
+	reset_sockaddr(&s_in);
+	if (bind(client->data_mng.fd_socket, (struct sockaddr *)&s_in,
+		sizeof(s_in)) == -1 || listen(client->data_mng.fd_socket, 1)) {
 		close(client->data_mng.fd_socket);
-		printf("Error In bind\n");
+		return 84;
 	} else {
-		client->data_mng.ip_server = inet_ntoa(s_in.sin_addr);
-		s_in.sin_family = AF_INET;
-		s_in.sin_port = 0;
-		s_in.sin_addr.s_addr = INADDR_ANY;
-		if (getsockname(client->data_mng.fd_socket, (struct sockaddr *)&s_in, &len) == -1) {
+		reset_sockaddr(&s_in);
+		if (getsockname(client->data_mng.fd_socket,
+			(struct sockaddr *)&s_in, &len) == -1) {
 			close(client->data_mng.fd_socket);
 			return 84;
 		}
 		client->data_mng.port_client = ntohs(s_in.sin_port);
 	}
-	return ret;
+	return 0;
 }
 
 static int create_new_socket(t_client *client, int fd_server)
@@ -74,14 +63,15 @@ static int create_new_socket(t_client *client, int fd_server)
 
 static void display_pasv_mode(t_client *client)
 {
-	char **tmp = str_to_wordtab(client->data_mng.ip_server, '.');
+	char **tmp = str_to_wordtab(client->data_mng.ip_client, '.');
 	char port[MAX_LENGTH_COMMAND];
 
-	sprintf(port, "%d,%d).\r\n", client->data_mng.port_client / 256, client->data_mng.port_client % 256);
+	sprintf(port, "%d,%d).\r\n", client->data_mng.port_client / 256,
+		client->data_mng.port_client % 256);
 	if (!tmp || !port)
 		print_msg_to_client(client, "552");
 	write_msg(client->fd, "227 Entering Passive Mode (");
-	for (int idx = 0; tmp[idx] ; ++idx) {
+	for (int idx = 0; tmp[idx]; ++idx) {
 		write_msg(client->fd, tmp[idx]);
 		write_msg(client->fd, ",");
 	}
@@ -98,13 +88,12 @@ int command_pasv(int fd_server, t_client *client,
 		return 0;
 	}
 	if (client->mode != UNKNOWN && client->data_mng.fd_socket > 0) {
-		if (setsockopt(client->data_mng.fd_socket, SOL_SOCKET, SO_REUSEADDR, &(int){1},
-			sizeof(int)) < 0)
+		if (setsockopt(client->data_mng.fd_socket, SOL_SOCKET,
+			SO_REUSEADDR, &(int){1}, sizeof(int)) < 0)
 			fprintf(stderr, "Can't close old socket\n");
 		close(client->data_mng.fd_socket);
 		client->data_mng.fd_socket = 0;
 	}
-	print_msg_to_client(client, "150");
 	if (create_new_socket(client, fd_server))
 		print_msg_to_client(client, "552");
 	else {

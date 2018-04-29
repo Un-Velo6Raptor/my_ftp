@@ -63,7 +63,7 @@ static int loop_read(int fd_server, t_client *client, char *home)
 			-1) {
 			ret = 84;
 		} else if (FD_ISSET(client->fd, &readfs))
-			command_send_to_manage(client, fd_server, home);
+			ret = command_send_to_manage(client, fd_server, home);
 	}
 	return ret;
 }

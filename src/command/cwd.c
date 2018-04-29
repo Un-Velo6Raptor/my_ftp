@@ -15,7 +15,7 @@ static int verify_path(t_client *client, char *home, char *dir, char *new_dir)
 	return 1;
 }
 
-static int check_change_directory(t_client *client, char *home, char *to)
+int check_change_directory(t_client *client, char *home, char *to)
 {
 	char actual_dir[MAX_LENGTH_COMMAND + 1] = "\0";
 	char new_dir[MAX_LENGTH_COMMAND + 1] = "\0";
@@ -40,8 +40,7 @@ static int check_change_directory(t_client *client, char *home, char *to)
 }
 
 int command_cwd(int fd_server __attribute__((unused)), t_client *client,
-	char *home, char *command
-)
+	char *home, char *command)
 {
 	char **tab = NULL;
 
@@ -52,7 +51,8 @@ int command_cwd(int fd_server __attribute__((unused)), t_client *client,
 	tab = str_to_wordtab(command, ' ');
 	if (tablen(tab) == 1)
 		print_msg_to_client(client, "550");
-	else if (tablen(tab) && check_change_directory(client, home, tab[1]) == 1)
+	else if (tablen(tab) &&
+		check_change_directory(client, home, tab[1]) == 1)
 		print_msg_to_client(client, "250");
 	return 0;
 }

@@ -15,7 +15,7 @@ int command_cdup(int fd_server __attribute__((unused)), t_client *client,
 		print_msg_to_client(client, "530");
 		return 0;
 	}
-	command_cwd(fd_server, client, home, "CWD ..");
-	print_msg_to_client(client, "200");
+	if (check_change_directory(client, home, "..") == 1)
+		print_msg_to_client(client, "200");
 	return 0;
 }

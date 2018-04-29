@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include "my_ftp.h"
 
-void error_client(t_client *client, char *msg) // TODO: A verifier vu que c'est dans l'fils
+void error_client(t_client *client, char *msg)
 {
 	fprintf(stderr, "%s: %s\n", client->data_mng.ip_client, msg);
 	client->is_used = FALSE;

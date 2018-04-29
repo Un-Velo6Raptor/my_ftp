@@ -8,8 +8,10 @@
 #include <string.h>
 #include "my_ftp.h"
 
-int command_quit(int fd_server __attribute__((unused)), t_client *client __attribute__((unused)),
-	char *home __attribute__((unused)), char *command __attribute__((unused)))
+int command_quit(int fd_server __attribute__((unused)),
+	t_client *client __attribute__((unused)),
+	char *home __attribute__((unused)),
+	char *command __attribute__((unused)))
 {
 	return 1;
 }

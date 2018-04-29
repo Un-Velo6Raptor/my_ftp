@@ -17,35 +17,36 @@
 #include <fcntl.h>
 #include "my_ftp.h"
 
+static void exec_command(t_client *client, int client_fd, char *command)
+{
+	int saved_stdout = dup(1);
+
+	dup2(client_fd, 1);
+	if (system(command) != 0) {
+		dup2(saved_stdout, 1);
+		print_msg_to_client(client, "550");
+	} else
+		dup2(saved_stdout, 1);
+	close_reset_socket(client);
+}
+
 static int retr_pasv(t_client *client, char **tab)
 {
 	char command[MAX_LENGTH_COMMAND] = "cat ";
 	struct sockaddr_in s_in_client;
 	socklen_t s_in_size = sizeof(s_in_client);
 	int client_fd;
-	int saved_stdout = dup(1);
 
 	strcat(command, tab[1]);
-	client_fd = accept(client->data_mng.fd_socket, (struct sockaddr *)&s_in_client,
-		&s_in_size);
+	print_msg_to_client(client, "150");
+	client_fd = accept(client->data_mng.fd_socket,
+		(struct sockaddr *)&s_in_client, &s_in_size);
 	if (client_fd == -1) {
 		print_msg_to_client(client, "425");
 		return 0;
 	}
-	dup2(client_fd, 1);
-	if (system(command) != 0) {
-		dup2(saved_stdout, 1);
-		print_msg_to_client(client, "550");
-	}
-	else
-	dup2(saved_stdout, 1);
-	client->mode = UNKNOWN;
-	setsockopt(client->data_mng.fd_socket, SOL_SOCKET, SO_REUSEADDR, &(int){1},
-		sizeof(int));
-	close(client->data_mng.fd_socket);
+	exec_command(client, client_fd, command);
 	close(client_fd);
-	client->data_mng.fd_socket = 0;
-	print_msg_to_client(client, "150");
 	print_msg_to_client(client, "226");
 	return 0;
 }
@@ -55,7 +56,6 @@ static int retr_port(t_client *client, char **tab)
 	char command[MAX_LENGTH_COMMAND] = "cat ";
 	struct sockaddr_in s_in_client;
 	socklen_t s_in_size = sizeof(s_in_client);
-	int saved_stdout = dup(1);
 
 	strcat(command, tab[1]);
 	client->data_mng.fd_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -64,32 +64,20 @@ static int retr_port(t_client *client, char **tab)
 	s_in_client.sin_family = AF_INET;
 	s_in_client.sin_addr.s_addr = inet_addr(client->data_mng.ip_server);
 	s_in_client.sin_port = htons(client->data_mng.port_server);
-	if (connect(client->data_mng.fd_socket, &s_in_client, s_in_size) == -1) {
+	print_msg_to_client(client, "150");
+	if (connect(client->data_mng.fd_socket, &s_in_client, s_in_size) ==
+		-1) {
 		print_msg_to_client(client, "425");
 		return 0;
 	}
-	client->mode = UNKNOWN;
-	dup2(client->data_mng.fd_socket, 1);
-	if (system(command) != 0) {
-		dup2(saved_stdout, 1);
-		print_msg_to_client(client, "550");
-	}
-	else
-		dup2(saved_stdout, 1);
-	dup2(saved_stdout, 1);
-	setsockopt(client->data_mng.fd_socket, SOL_SOCKET, SO_REUSEADDR, &(int){1},
-		sizeof(int));
-	close(client->data_mng.fd_socket);
-	client->data_mng.fd_socket = 0;
-	print_msg_to_client(client, "150");
+	exec_command(client, client->data_mng.fd_socket, command);
 	print_msg_to_client(client, "226");
 	return 0;
 }
 
-int command_retr(int fd_server __attribute__((unused)),
-	t_client *client,
-	char *home __attribute__((unused)),
-	char *command)
+int command_retr(int fd_server __attribute__((unused)), t_client *client,
+	char *home __attribute__((unused)), char *command
+)
 {
 	char **tab = NULL;
 
@@ -102,9 +90,7 @@ int command_retr(int fd_server __attribute__((unused)),
 		return 0;
 	}
 	tab = str_to_wordtab(command, ' ');
-	if (!tab)
-		return 0;
-	if (tablen(tab) != 2)
+	if (!tab || tablen(tab) != 2)
 		print_msg_to_client(client, "550");
 	else if (client->mode == TRUE)
 		retr_pasv(client, tab);

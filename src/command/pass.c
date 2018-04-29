@@ -9,8 +9,7 @@
 #include "my_ftp.h"
 
 int command_pass(int fd_server __attribute__((unused)), t_client *client,
-	char *home __attribute__((unused)), char *command
-)
+	char *home __attribute__((unused)), char *command)
 {
 	char **tab = NULL;
 

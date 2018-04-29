@@ -19,7 +19,7 @@
 #include "my_ftp.h"
 
 static int create_proccess_client(int fd_server, t_client *client, char *path,
-	struct sockaddr_in *s_in_client)
+	struct sockaddr_in *s_in_client __attribute__((unused)))
 {
 	int ret = 0;
 
@@ -39,24 +39,27 @@ static int create_proccess_client(int fd_server, t_client *client, char *path,
 }
 
 static int accept_client_connection(int fd_server, char *path,
-	t_client *list_client)
+	t_client *list_client
+)
 {
-	struct sockaddr_in s_in_client;
-	socklen_t s_in_size = sizeof(s_in_client);
+	struct sockaddr_in s_in;
+	socklen_t s_in_size = sizeof(s_in);
 	int client_fd;
 	int current_client = 0;
 	int ret = 0;
 
-	client_fd = accept(fd_server, (struct sockaddr *)&s_in_client,
-		&s_in_size);
-	if (client_fd == -1) {
+	client_fd = accept(fd_server, (struct sockaddr *)&s_in, &s_in_size);
+	if (client_fd == -1 ||
+		getsockname(client_fd, (struct sockaddr *)&s_in, &s_in_size) ==
+			-1) {
 		fprintf(stderr, "Error: Can't accept the client\n");
 		ret = 84;
 	} else {
 		current_client = assign_block_client(list_client, client_fd);
-		list_client[current_client].data_mng.ip_client = inet_ntoa(s_in_client.sin_addr);
+		list_client[current_client].data_mng.ip_client = inet_ntoa(
+			s_in.sin_addr);
 		ret = create_proccess_client(fd_server,
-			&list_client[current_client], path, &s_in_client);
+			&list_client[current_client], path, &s_in);
 	}
 	return ret;
 }
@@ -79,24 +82,24 @@ static int wait_client_proccess(t_client *list_client)
 
 int loop_client_connection(int fd_server, char *path)
 {
-	static t_client list_client[NB_CLIENT_MAX + 1];
+	static t_client list[NB_CLIENT_MAX + 1];
 	int ret = 0;
 	fd_set readfs;
-	struct timeval select_wait;
+	struct timeval wait;
 
-	select_wait.tv_usec = 1000;
-	init_list_client(list_client);
+	wait.tv_usec = 1000;
+	init_list_client(list);
 	while (!ret) {
 		FD_ZERO(&readfs);
 		FD_SET(fd_server, &readfs);
-		if (select(fd_server + 1, &readfs, NULL, NULL, &select_wait) == -1) {
+		if (select(fd_server + 1, &readfs, NULL, NULL, &wait) == -1) {
 			ret = 84;
 			break;
 		}
 		if (FD_ISSET(fd_server, &readfs))
-			ret = accept_client_connection(fd_server, path, list_client);
-		wait_client_proccess(list_client);
+			ret = accept_client_connection(fd_server, path, list);
+		wait_client_proccess(list);
 	}
-	close_all_client(list_client);
+	close_all_client(list);
 	return ret;
 }

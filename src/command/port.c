@@ -15,9 +15,11 @@
 #include <netinet/in.h>
 #include "my_ftp.h"
 
-static int check_car_command(char *command) {
-	for (int idx = 0; command[idx] != '\0' ; ++idx) {
-		if ((command[idx] < '0' || command[idx] > '9') && command[idx] != ',')
+static int check_car_command(char *command)
+{
+	for (int idx = 0; command[idx] != '\0'; ++idx) {
+		if ((command[idx] < '0' || command[idx] > '9') &&
+			command[idx] != ',')
 			return 1;
 	}
 	return 0;
@@ -28,13 +30,9 @@ static char *get_ip_user(char *command, int *port)
 	char *ip_result = malloc(sizeof(char) * 16);
 	char **tab = str_to_wordtab(&command[5], ',');
 
-	if (!ip_result || !tab)
+	if (!ip_result || !tab || tablen(tab) != 6)
 		return NULL;
-	if (tablen(tab) != 6) {
-		free_tab(tab);
-		return NULL;
-	}
-	for (int idx = 0; tab[idx] ; ++idx) {
+	for (int idx = 0; tab[idx]; ++idx) {
 		if (atoi(tab[idx]) < 0 || atoi(tab[idx]) > 256) {
 			free_tab(tab);
 			return NULL;
@@ -54,7 +52,8 @@ static char *get_ip_user(char *command, int *port)
 static int create_new_socket(t_client *client, char *command, int fd_server)
 {
 	client->data_mng.port_server = 0;
-	client->data_mng.ip_server = get_ip_user(command, &client->data_mng.port_server);
+	client->data_mng.ip_server = get_ip_user(command,
+		&client->data_mng.port_server);
 
 	if (!client->data_mng.port_server || !client->data_mng.ip_server) {
 		return 1;
@@ -78,7 +77,8 @@ int command_port(int fd_server __attribute__((unused)),
 		close(client->data_mng.fd_socket);
 		client->data_mng.fd_socket = 0;
 	}
-	if (check_car_command(&command[5]) || create_new_socket(client, command, fd_server))
+	if (check_car_command(&command[5]) ||
+		create_new_socket(client, command, fd_server))
 		print_msg_to_client(client, "500");
 	else {
 		print_msg_to_client(client, "200");
