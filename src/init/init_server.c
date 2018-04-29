@@ -55,11 +55,9 @@ int init_and_launch_server(int port, char *path)
 	fd_server = socket(AF_INET, SOCK_STREAM, pe->p_proto);
 	if (fd_server == -1)
 		fprintf(stderr, "Error: Can't create the socket\n");
-	if (!init_bind(fd_server, port) && !init_listen(fd_server))
+	else if (!init_bind(fd_server, port) && !init_listen(fd_server))
 		loop_client_connection(fd_server, path);
-	if (setsockopt(fd_server, SOL_SOCKET, SO_REUSEADDR, &(int){1},
-		sizeof(int)) < 0)
-		fprintf(stderr, "Error: setsockopt failed");
+	setsockopt(fd_server, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int));
 	close(fd_server);
 	return ret;
 }

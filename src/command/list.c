@@ -27,6 +27,7 @@ static int list_pasv(t_client *client, char **tab)
 
 	if (tablen(tab) > 1)
 		strcat(command, tab[1]);
+	strcat(command, " | grep -v ^total");
 	client_fd = accept(client->data_mng.fd_socket, (struct sockaddr *)&s_in_client,
 		&s_in_size);
 	if (client_fd == -1) {
@@ -56,6 +57,7 @@ static int list_port(t_client *client, char **tab)
 
 	if (tablen(tab) > 1)
 		strcat(command, tab[1]);
+	strcat(command, " | grep -v ^total");
 	client->data_mng.fd_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (client->data_mng.fd_socket == -1)
 		return 0;

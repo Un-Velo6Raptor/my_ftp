@@ -61,7 +61,8 @@ char **str_to_wordtab(char *str, char sep)
 	if (!tab)
 		return NULL;
 	for (; idx < nb_words; ++idx) {
-		tab[idx] = malloc(sizeof(char) * (len_word(&str[start], sep) + 1));
+		tab[idx] = malloc(
+			sizeof(char) * (len_word(&str[start], sep) + 1));
 		if (!tab[idx])
 			return NULL;
 		start += copy_word(&str[start], tab[idx], sep);
